@@ -22,32 +22,37 @@
 #    The matrix is a randomly generated array of digits,
 #    either 4-row X 12-column or 4-row X 16-column:
 #
-#      3898 9695 5662 1221
-#      6024 0941 8504 9113
-#      7413 0557 1441 4467
-#      2360 0896 2467 3441
+#        abcd efgh ijkl mnop
+#        -------------------
+#      1|3898 9695 5662 1221
+#      2|6024 0941 8504 9113
+#      3|7413 0557 1441 4467
+#      4|2360 0896 2467 3441
 #
-#    The pattern consists of pairs of HEXADECIMAL digits specifying the
-#    zero-indexed (row,column) of each digit to select from the matrix, e.g.:
+#    The pattern consists of chessboard coordinates of the digits to
+#    select from the matrix, e.g.:
 #
-#         r3c0 r0c3 r1c10 r2c14
-#      ->  3 0  0 3  1 a  2 e
-#      -> smxlogin --pattern 30031a2e
+#         a4 d1 k2 o3
+#      -> smxlogin --pattern a4d1k2o3
 #
 #    Combining the above examples into a 4-digit password yields 2806:
 #
-#         8
-#                  0
-#                       6
-#      2
+#        abcd efgh ijkl mnop
+#        -------------------
+#      1|   8
+#      2|            0
+#      3|                 6
+#      4|2
 #
 
 from sys import stderr
 from getpass import getpass
 import robobrowser, re, argparse
 
-def patternize(p):
-    return [(int(y,16), int(x,16)) for y,x in zip(p[::2], p[1::2])]
+def patternize(s):
+    s = s.replace(' ','')
+    p = [(int(y,10)-1, ord(x.lower())-ord('a')) for x,y in zip(s[::2], s[1::2])]
+    return p
 
 def reassemble(matrix, pattern):
     matrix = [row.replace(' ','') for row in matrix]
@@ -57,7 +62,7 @@ def reassemble(matrix, pattern):
 p = argparse.ArgumentParser()
 p.add_argument('login_url', help='SecureMatrix login URL')
 p.add_argument('-u','--user', help='Username')
-p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of paired hexadecimal digits; each pair indicates row and column to choose)')
+p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
 p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
 p.add_argument('-v','--verbose', action='count')
 args = p.parse_args()
