@@ -3,7 +3,14 @@ smxlogin
 
 This is a helper script to allow you to automatically login to a Juniper VPN
 that uses a [SecureMatrix](http://cse-america.com/smx/solutions.htm)
-"password image pattern".
+"password image pattern."
+
+How to install
+==============
+
+Use [Python 3's `pip` tool](https://docs.python.org/3/installing/):
+
+    $ pip3 install git+https://github.com/dlenski/smxlogin
 
 How to use
 ==========
