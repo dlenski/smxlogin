@@ -3,6 +3,7 @@
 from sys import stderr
 from getpass import getpass
 import robobrowser, re, argparse
+from .version import __version__
 
 def patternize(s):
     s = s.replace(' ','')
@@ -15,11 +16,13 @@ def reassemble(matrix, pattern):
     return ''.join(matrix[y][x] for y,x in pattern)
 
 p = argparse.ArgumentParser()
+p.version=__version__
 p.add_argument('login_url', help='SecureMatrix login URL')
 p.add_argument('-u','--user', help='Username')
 p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
 p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
 p.add_argument('-v','--verbose', action='count')
+p.add_argument('--version', action='version')
 args = p.parse_args()
 
 ################################################################################
