@@ -1,50 +1,5 @@
 #!/usr/bin/env python3
 
-# What this is
-# ============
-#
-# This is a helper script to allow you to login to a Juniper VPN
-# that uses a SecureMatrix (http://cse-america.com/smx/solutions.htm)
-# "password image pattern".
-#
-# You specify the login URL, and optionally your username and the
-# pattern of digits to pick from the random matrix. This script will
-# navigate the web login forms and return the HOST and COOKIE
-# variables in a form that can be used by OpenConnect:
-#
-#   $ eval `smxlogin.py https://vpn.company.com/login/matrix`
-#   $ openconnect --cookie "$COOKIE" "$HOST"
-#
-#
-# How to enter your pattern
-# =========================
-#
-#    The matrix is a randomly generated array of digits,
-#    either 4-row X 12-column or 4-row X 16-column:
-#
-#        abcd efgh ijkl mnop
-#        -------------------
-#      1|3898 9695 5662 1221
-#      2|6024 0941 8504 9113
-#      3|7413 0557 1441 4467
-#      4|2360 0896 2467 3441
-#
-#    The pattern consists of chessboard coordinates of the digits to
-#    select from the matrix, e.g.:
-#
-#         a4 d1 k2 o3
-#      -> smxlogin --pattern a4d1k2o3
-#
-#    Combining the above examples into a 4-digit password yields 2806:
-#
-#        abcd efgh ijkl mnop
-#        -------------------
-#      1|   8
-#      2|            0
-#      3|                 6
-#      4|2
-#
-
 from sys import stderr
 from getpass import getpass
 import robobrowser, re, argparse
