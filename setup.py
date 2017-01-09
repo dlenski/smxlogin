@@ -43,5 +43,5 @@ setup(name="smxlogin",
       license='GPL v3 or later',
       url="https://github.com/dlenski/smxlogin",
       packages=["smxlogin"],
-      entry_points={ 'console_scripts': [ 'smxlogin=smxlogin.__main__' ] }
+      entry_points={ 'console_scripts': [ 'smxlogin=smxlogin.__main__:main' ] }
       )

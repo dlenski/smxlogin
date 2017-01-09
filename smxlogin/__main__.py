@@ -15,62 +15,70 @@ def reassemble(matrix, pattern):
     assert all(len(r)==len(matrix[0]) for r in matrix)
     return ''.join(matrix[y][x] for y,x in pattern)
 
-p = argparse.ArgumentParser()
-p.version=__version__
-p.add_argument('login_url', help='SecureMatrix login URL')
-p.add_argument('-u','--user', help='Username')
-p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
-p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
-p.add_argument('-v','--verbose', action='count')
-p.add_argument('--version', action='version')
-args = p.parse_args()
+def parse_args(args=None):
+    p = argparse.ArgumentParser()
+    p.version=__version__
+    p.add_argument('login_url', help='SecureMatrix login URL')
+    p.add_argument('-u','--user', help='Username')
+    p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
+    p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
+    p.add_argument('-v','--verbose', action='count')
+    p.add_argument('--version', action='version')
+    args = p.parse_args(args)
+    return p, args
+
+def main(args=None):
+    p, args = parse_args(args)
+
+    # open login page as Juniper NC user-agent
+    br=robobrowser.RoboBrowser(user_agent='ncsvc', parser='html.parser')
+    br.session.headers['Accept-Language']='en'
+    br.session.proxies['https']=args.proxy
+    if args.verbose:
+        print("Opening login page: %s ..." % args.login_url, file=stderr)
+    br.open(args.login_url)
+
+    # fill in username form
+    f = br.get_form(0)
+    assert f['PROC'].value=='doChallengeCode'
+    username = args.user or input('Username: ')
+    f['REPORT']=username
+    if args.verbose:
+        print("Submitting username...", file=stderr)
+    br.submit_form(f)
+
+    # parse matrix and assemble password from pattern
+    f = br.get_form('SMX_FORM')
+    assert f['PROC'].value=='doPasswordCheck'
+    matrix = re.findall('(?:\d{4} )+', str(br.find('center')))
+    if args.pattern:
+        password = reassemble(matrix, args.pattern)
+        if args.verbose>1:
+            print('Matrix:\n  %s\n=> Assembled password: %s' % ('\n  '.join(matrix), password), file=stderr)
+        elif args.verbose:
+            print("Assembled password from matrix.", file=stderr)
+    else:
+        print("Matrix:\n  %s" % '\n  '.join(matrix), file=stderr)
+        password = getpass('Password: ')
+    f['PASSWORD'] = password
+    if args.verbose:
+        print("Submitting password...", file=stderr)
+    br.submit_form(f)
+
+    # final step
+    f = br.get_form('SMX_FORM')
+    assert f['username'].value==username
+    assert f['password'].value==password
+    if args.verbose:
+        print("Final form submission, expecting to get DSID cookie...", file=stderr)
+    br.submit_form(f)
+
+    # output the cookie and destination URL
+    assert 'DSID' in br.session.cookies
+    print("COOKIE='DSID=%s'" % br.session.cookies['DSID'])
+    print("HOST='%s'" % br.url)
 
 ################################################################################
 
-# open login page as Juniper NC user-agent
-br=robobrowser.RoboBrowser(user_agent='ncsvc', parser='html.parser')
-br.session.headers['Accept-Language']='en'
-br.session.proxies['https']=args.proxy
-if args.verbose:
-    print("Opening login page: %s ..." % args.login_url, file=stderr)
-br.open(args.login_url)
-
-# fill in username form
-f = br.get_form(0)
-assert f['PROC'].value=='doChallengeCode'
-username = args.user or input('Username: ')
-f['REPORT']=username
-if args.verbose:
-    print("Submitting username...", file=stderr)
-br.submit_form(f)
-
-# parse matrix and assemble password from pattern
-f = br.get_form('SMX_FORM')
-assert f['PROC'].value=='doPasswordCheck'
-matrix = re.findall('(?:\d{4} )+', str(br.find('center')))
-if args.pattern:
-    password = reassemble(matrix, args.pattern)
-    if args.verbose>1:
-        print('Matrix:\n  %s\n=> Assembled password: %s' % ('\n  '.join(matrix), password), file=stderr)
-    elif args.verbose:
-        print("Assembled password from matrix.", file=stderr)
-else:
-    print("Matrix:\n  %s" % '\n  '.join(matrix), file=stderr)
-    password = getpass('Password: ')
-f['PASSWORD'] = password
-if args.verbose:
-    print("Submitting password...", file=stderr)
-br.submit_form(f)
-
-# final step
-f = br.get_form('SMX_FORM')
-assert f['username'].value==username
-assert f['password'].value==password
-if args.verbose:
-    print("Final form submission, expecting to get DSID cookie...", file=stderr)
-br.submit_form(f)
-
-# output the cookie and destination URL
-assert 'DSID' in br.session.cookies
-print("COOKIE='DSID=%s'" % br.session.cookies['DSID'])
-print("HOST='%s'" % br.url)
+if __name__=='__main__':
+    main()
