@@ -3,6 +3,7 @@
 from sys import stderr
 from getpass import getpass
 import robobrowser, re, argparse
+from requests.utils import urlparse
 from .version import __version__
 
 def patternize(s):
@@ -76,7 +77,7 @@ def main(args=None):
     # output the cookie and destination URL
     assert 'DSID' in br.session.cookies
     print("COOKIE='DSID=%s'" % br.session.cookies['DSID'])
-    print("HOST='%s'" % br.url)
+    print("HOST='%s'" % urlparse(br.url).netloc)
 
 ################################################################################
 
