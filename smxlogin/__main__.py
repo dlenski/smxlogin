@@ -23,7 +23,7 @@ def parse_args(args=None):
     p.add_argument('-u','--user', help='Username')
     p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
     p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
-    p.add_argument('-v','--verbose', action='count')
+    p.add_argument('-v','--verbose', default=0, action='count')
     p.add_argument('--version', action='version')
     args = p.parse_args(args)
     return p, args
