@@ -40,6 +40,8 @@ def main(args=None):
     br.open(args.login_url)
 
     # fill in username form
+    if args.verbose>1:
+        print("Username form:\n%s" % br.parsed, file=stderr)
     f = br.get_form(0)
     assert f['PROC'].value=='doChallengeCode'
     username = args.user or input('Username: ')
@@ -49,6 +51,8 @@ def main(args=None):
     br.submit_form(f)
 
     # parse matrix and assemble password from pattern
+    if args.verbose>1:
+        print("Matrix password form:\n%s" % br.parsed, file=stderr)
     f = br.get_form('SMX_FORM')
     assert f['PROC'].value=='doPasswordCheck'
     matrix = re.findall('(?:\d{4} )+', str(br.find('center')))
@@ -67,6 +71,8 @@ def main(args=None):
     br.submit_form(f)
 
     # final step
+    if args.verbose>1:
+        print("Final form:\n%s" % br.parsed, file=stderr)
     f = br.get_form('SMX_FORM')
     assert f['username'].value==username
     assert f['password'].value==password
