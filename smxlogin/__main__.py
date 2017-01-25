@@ -24,6 +24,7 @@ def parse_args(args=None):
     p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
     p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
     p.add_argument('-v','--verbose', default=0, action='count')
+    p.add_argument('--password', action='store_true', help='Just show the password and stop, instead of continuing and outputting the DSID cookie')
     p.add_argument('--version', action='version')
     args = p.parse_args(args)
     return p, args
@@ -65,6 +66,10 @@ def main(args=None):
     else:
         print("Matrix:\n  %s" % '\n  '.join(matrix), file=stderr)
         password = getpass('Password: ')
+    if args.password:
+        print(password)
+        return
+
     f['PASSWORD'] = password
     if args.verbose:
         print("Submitting password...", file=stderr)
