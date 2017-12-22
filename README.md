@@ -38,6 +38,20 @@ DSID=f65a1f512af81dd1970d96ae07c73bf6
 $ openconnect --protocol=nc --cookie "$COOKIE" --servercert "$FINGERPRINT" "$HOST"
 ```
 
+With the `--password` option, it will simply output the password assembled
+from the matrix — and it won't attempt to login to a Juniper VPN and fetch
+the VPN authentication cookie:
+
+```sh
+$ password=$( smxlogin.py -v --password -u myusername -p a1b2c3d4 https://vpn.company.com/login/matrix )
+Opening login page: https://vpn.company.com/login/matrix ...
+Submitting username...
+Assembled password from matrix.
+
+$ echo $password
+3497
+```
+
 How to enter your login pattern
 ===============================
 
