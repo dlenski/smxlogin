@@ -5,6 +5,10 @@ This is a helper script to allow you to automatically login to a Juniper VPN
 that uses a [SecureMatrix](http://cse-america.com/smx/solutions.htm)
 "password image pattern."
 
+This mess:
+
+![SMX image pattern illustration](http://cse-america.com/my_images/page__howitworks/fig03-smx.png)
+
 How to install
 ==============
 
