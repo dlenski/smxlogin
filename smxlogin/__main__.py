@@ -55,10 +55,12 @@ def main(args=None):
     br.open(args.login_url)
 
     # fill in username form
-    if args.verbose>1:
-        print("Username form:\n%s" % br.parsed, file=stderr)
     f = br.get_form(0)
-    assert f['PROC'].value=='doChallengeCode'
+    check_form = (f and 'PROC' in f.fields and f['PROC'].value=='doChallengeCode')
+    if args.verbose>1 or not check_form:
+        print("Username form:\n%s" % br.parsed, file=stderr)
+    if not check_form:
+        raise SystemExit("ERROR: Did not receive expected username form.")
     username = args.user or input('Username: ')
     f['REPORT']=username
     if args.verbose:
@@ -66,35 +68,49 @@ def main(args=None):
     br.submit_form(f)
 
     # parse matrix and assemble password from pattern
-    if args.verbose>1:
-        print("Matrix password form:\n%s" % br.parsed, file=stderr)
-    f = br.get_form('SMX_FORM')
-    assert f['PROC'].value=='doPasswordCheck'
-    matrix = re.findall('(?:\d{4} )+', str(br.find('center')))
-    if args.pattern:
-        password = reassemble(matrix, args.pattern)
-        if args.verbose>1:
-            print('Matrix:\n  %s\n=> Assembled password: %s' % ('\n  '.join(matrix), password), file=stderr)
-        elif args.verbose:
-            print("Assembled password from matrix.", file=stderr)
-    else:
-        print("Matrix:\n  %s" % '\n  '.join(matrix), file=stderr)
-        password = getpass('Password: ')
-    if args.password:
-        print(password)
-        return
+    while True:
+        f = br.get_form('SMX_FORM')
+        check_form = (f and 'PROC' in f.fields and f['PROC'].value=='doPasswordCheck')
+        if args.verbose>1 or not check_form:
+            print("Matrix password form:\n%s" % br.parsed, file=stderr)
+        if not check_form:
+            raise SystemExit("ERROR: Did not receive expected matrix password form.")
+        matrix = re.findall('(?:\d{4} )+', str(br.find('center')))
+        if args.pattern:
+            password = reassemble(matrix, args.pattern)
+            if args.verbose>1:
+                print('Matrix:\n  %s\n=> Assembled password: %s' % ('\n  '.join(matrix), password), file=stderr)
+            elif args.verbose:
+                print("Assembled password from matrix.", file=stderr)
+        else:
+            print("Matrix:\n  %s" % '\n  '.join(matrix), file=stderr)
+            password = getpass('Password: ')
+        if args.password:
+            print(password)
+            return
 
-    f['PASSWORD'] = password
-    if args.verbose:
-        print("Submitting password...", file=stderr)
-    br.submit_form(f)
+        f['PASSWORD'] = password
+        if args.verbose:
+            print("Submitting password...", file=stderr)
+        br.submit_form(f)
+
+        f = br.get_form('SMX_FORM')
+        if f and 'PROC' in f.fields and f['PROC'].value=='doPasswordCheck':
+            if args.pattern:
+                raise SystemExit("ERROR: Incorrect password entered. Check pattern.")
+            else:
+                print("ERROR: Incorrect password entered. Try again.")
+                continue
+        else:
+            break
 
     # final step
-    if args.verbose>1:
+    check_form = (f and 'username' in f.fields and 'password' in f.fields
+                  and f['username'].value==username and f['password'].value==password)
+    if args.verbose>1 or not check_form:
         print("Final form:\n%s" % br.parsed, file=stderr)
-    f = br.get_form('SMX_FORM')
-    assert f['username'].value==username
-    assert f['password'].value==password
+    if not check_form:
+        raise SystemExit("ERROR: Did not receive expected final form.")
 
     if args.verbose:
         print("Final form submission, expecting to get DSID cookie...", file=stderr)

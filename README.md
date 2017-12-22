@@ -68,7 +68,6 @@ TODO
 ====
 
 * Add support for non-Juniper VPNs (if any of them use smxlogin?)
-* Add better error messages
 
 License
 =======
