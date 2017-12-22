@@ -21,7 +21,7 @@ Specify the login URL, and optionally your username and the
 pattern of digits to pick from the random matrix.
 
 This script will navigate the web login forms and return the `HOST`
-and `COOKIE` variables in a form that can be used by
+`COOKIE`, and `FINGERPRINT` variables in a form that can be used by
 [OpenConnect](http://www.infradead.org/openconnect/juniper.html):
 
 ```sh
@@ -35,7 +35,7 @@ Final form submission, expecting to get DSID cookie...
 $ echo $COOKIE
 DSID=f65a1f512af81dd1970d96ae07c73bf6
 
-$ openconnect --protocol=nc --cookie "$COOKIE" "$HOST"
+$ openconnect --protocol=nc --cookie "$COOKIE" --servercert "$FINGERPRINT" "$HOST"
 ```
 
 How to enter your login pattern
