@@ -53,11 +53,11 @@ The SecureMatrix login page displays a randomly generated array of digits (eithe
 Your pattern password can be described as a series of [chessboard coordinates](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) for the digits to select from the matrix.
 For example, suppose your password selects 4 locations from the pattern above, as follows:
 
-     abcd efgh ijkl mnop
-     -------------------
+      abcd efgh ijkl mnop
+      -------------------
     1|   8
     2|            0
-    3|                6
+    3|                 6
     4|2
 
       a4 -> d1 -> k2 -> o3
