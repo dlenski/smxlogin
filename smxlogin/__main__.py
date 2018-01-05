@@ -102,7 +102,8 @@ def main(args=None):
     br.submit_form(f)
 
     # output the cookie and destination URL
-    assert 'DSID' in br.session.cookies
+    if 'DSID' not in br.session.cookies:
+        raise SystemExit("ERROR: Did not receive expected DSID cookie.")
     print("COOKIE='DSID=%s'" % br.session.cookies['DSID'])
     print("HOST='%s'" % urlparse(br.url).netloc)
 
