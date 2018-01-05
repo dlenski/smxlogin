@@ -2,21 +2,9 @@
 
 from sys import stderr
 from getpass import getpass
-import robobrowser, re, argparse, hashlib
+import robobrowser, re, argparse
 from requests.utils import urlparse
-from requests.adapters import HTTPAdapter
-import hashlib
 from .version import __version__
-
-class PeerCertSaver(HTTPAdapter):
-    def build_response(self, request, resp):
-        response = super(PeerCertSaver, self).build_response(request, resp)
-        try:
-            response.peercert = resp._connection.sock.getpeercert(binary_form=True)
-            response.peercertinfo = resp._connection.sock.getpeercert(binary_form=False)
-        except AttributeError:
-            response.peercert = response.peercertinfo = None
-        return response
 
 def patternize(s):
     s = s.replace(' ','')
@@ -36,9 +24,7 @@ def parse_args(args=None):
     p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
     p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
     p.add_argument('-v','--verbose', default=0, action='count')
-    x = p.add_mutually_exclusive_group()
-    x.add_argument('-F','--no-fingerprint', dest='fingerprint', action='store_false', default=True, help="Don't include sha1 certificate fingerprint in output")
-    x.add_argument('--password', action='store_true', help='Just show the password and stop, instead of continuing and outputting the DSID cookie')
+    p.add_argument('--password', action='store_true', help='Just show the password and stop, instead of continuing and outputting the DSID cookie')
     p.add_argument('--version', action='version')
     args = p.parse_args(args)
     return p, args
@@ -111,19 +97,14 @@ def main(args=None):
         print("Final form:\n%s" % br.parsed, file=stderr)
     if not check_form:
         raise SystemExit("ERROR: Did not receive expected final form.")
-
     if args.verbose:
         print("Final form submission, expecting to get DSID cookie...", file=stderr)
-    if args.fingerprint:
-        br.session.mount('https://', PeerCertSaver())
     br.submit_form(f)
 
     # output the cookie and destination URL
     assert 'DSID' in br.session.cookies
     print("COOKIE='DSID=%s'" % br.session.cookies['DSID'])
     print("HOST='%s'" % urlparse(br.url).netloc)
-    if args.fingerprint:
-        print("FINGERPRINT='%s'" % hashlib.new('sha1', br.response.peercert).hexdigest())
 
 ################################################################################
 
