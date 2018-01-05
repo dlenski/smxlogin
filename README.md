@@ -9,6 +9,10 @@ This mess:
 
 ![SMX image pattern illustration](http://cse-america.com/my_images/page__howitworks/fig03-smx.png)
 
+Many Japanese companies use SecureMatrix logins for their VPNs. (Entry
+points, such as [Mitsubishi's](https://ssl-vpn.mitsubishicorp.com/smx_sll/am),
+can easily be found with a Google search.)
+
 How to install
 ==============
 
