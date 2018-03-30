@@ -30,7 +30,8 @@ pattern of digits to pick from the random matrix.
 
 This script will navigate the web login forms and return the `HOST`
 and `COOKIE` variables in a form that can be used by
-[OpenConnect](http://www.infradead.org/openconnect/juniper.html):
+[OpenConnect](http://www.infradead.org/openconnect/juniper.html)
+(equivalent to the output of `openconnect --authenticate`):
 
 ```sh
 $ eval $( smxlogin.py -v -u myusername -p a1b2c3d4 https://vpn.company.com/login/matrix )
@@ -40,8 +41,9 @@ Assembled password from matrix.
 Submitting password...
 Final form submission, expecting to get DSID cookie...
 
-$ echo $COOKIE
+$ echo $COOKIE; echo $HOST
 DSID=f65a1f512af81dd1970d96ae07c73bf6
+juniper.company.com
 
 $ openconnect --protocol=nc --cookie "$COOKIE" "$HOST"
 ```
