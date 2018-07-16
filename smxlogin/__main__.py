@@ -23,6 +23,7 @@ def parse_args(args=None):
     p.add_argument('-u','--user', help='Username')
     p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
     p.add_argument('-P','--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
+    p.add_argument('-k','--insecure', dest='verify', default=True, action='store_false', help="Don't very peer's SSL certificate")
     p.add_argument('-v','--verbose', default=0, action='count')
     p.add_argument('--password', action='store_true', help='Just show the password and stop, instead of continuing and outputting the DSID cookie')
     p.add_argument('--version', action='version')
@@ -36,6 +37,7 @@ def main(args=None):
     br=robobrowser.RoboBrowser(user_agent='ncsvc', parser='html.parser')
     br.session.headers['Accept-Language']='en'
     br.session.proxies['https']=args.proxy
+    br.session.verify=args.verify
     if args.verbose:
         print("Opening login page: %s ..." % args.login_url, file=stderr)
     br.open(args.login_url)
