@@ -84,6 +84,8 @@ def main(args=None):
 
         f = br.get_form('SMX_FORM')
         if f and 'PROC' in f.fields and f['PROC'].value=='doPasswordCheck':
+            if args.verbose>1 or not check_form:
+                print("Unexpected form:\n%s" % br.parsed, file=stderr)
             if args.pattern:
                 raise SystemExit("ERROR: Incorrect password entered. Check pattern.")
             else:

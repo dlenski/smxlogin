@@ -92,6 +92,9 @@ TODO
 ====
 
 * Add support for non-Juniper VPNs (if any of them use smxlogin?)
+* Some (newer?) versions of the SecureMatrix login obfuscate the submitted password through encryption.
+  It would be good to be able to detect when this obfuscation is in use, and thereby avoid submitting an incorrect
+  password.
 
 License
 =======
