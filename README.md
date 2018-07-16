@@ -48,7 +48,7 @@ juniper.company.com
 $ openconnect --protocol=nc --cookie "$COOKIE" "$HOST"
 ```
 
-With the `--password` option, it will simply output the password assembled
+With the `-P`/`--password` option, it will simply output the password assembled
 from the matrix — and it won't attempt to login to a Juniper VPN and fetch
 the VPN authentication cookie:
 
@@ -61,6 +61,9 @@ Assembled password from matrix.
 $ echo $password
 3497
 ```
+
+The `--proxy` option can be used to specify an HTTPS proxy in
+[any format supported by `python-requests`](http://docs.python-requests.org/en/master/user/advanced/#proxies).
 
 How to enter your login pattern
 ===============================
