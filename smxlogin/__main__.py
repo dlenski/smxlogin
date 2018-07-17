@@ -23,10 +23,13 @@ def parse_args(args=None):
     p.add_argument('-u','--user', help='Username')
     p.add_argument('-p','--pattern', type=patternize, help='Pattern to enter (series of chessboard coordinates to choose from the matrix)')
     p.add_argument('-P','--password', action='store_true', help='Just output the password and exit, instead of continuing and outputting the DSID cookie')
-    p.add_argument('-k','--insecure', dest='verify', default=True, action='store_false', help="Don't very peer's SSL certificate")
     p.add_argument('-v','--verbose', default=0, action='count')
-    p.add_argument('--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
     p.add_argument('--version', action='version')
+    g = p.add_argument_group('Advanced')
+    g.add_argument('--proxy', help='HTTPS proxy (in any format accepted by python-requests, e.g. socks5://localhost:8080)')
+    x = g.add_mutually_exclusive_group()
+    x.add_argument('-k','--insecure', dest='verify', default=True, action='store_false', help="Don't verify peer's SSL certificate")
+    x.add_argument('--cacert', dest='verify', help='Path to CA bundle file or directory (in OpenSSL format)')
     args = p.parse_args(args)
     return p, args
 
