@@ -1,6 +1,8 @@
 smxlogin
 ========
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 This is a helper script to allow you to automatically login to a Juniper VPN
 that uses a [SecureMatrix](http://cse-america.com/smx/solutions.htm)
 "password image pattern."
@@ -98,8 +100,4 @@ TODO
 * Some (newer?) versions of the SecureMatrix login obfuscate the submitted password through encryption.
   It would be good to be able to detect when this obfuscation is in use, and thereby avoid submitting an incorrect
   password.
-
-License
-=======
-
-GPLv3 or newer
+  
