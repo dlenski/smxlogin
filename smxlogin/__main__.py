@@ -3,7 +3,7 @@
 from sys import stderr
 from getpass import getpass
 import robobrowser, re, argparse
-from requests.utils import urlparse
+from urllib.parse import urlparse
 from .version import __version__
 
 def patternize(s):
